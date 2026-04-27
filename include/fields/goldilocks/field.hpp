@@ -4,6 +4,8 @@
 #include <iostream>
 #include <cstdint>
 
+#include "../../sumcheck/transcript.hpp"
+
 namespace goldilocks{
 
 
@@ -121,4 +123,15 @@ public:
     }
 };
 
+}
+
+
+namespace sumcheck {
+template <>
+struct FieldTraits<goldilocks::GF_base> {
+    static void absorb(Transcript& ts, const goldilocks::GF_base& e) { ts.absorb_u64(e.v); }
+    static goldilocks::GF_base squeeze(Transcript& ts) { 
+        return goldilocks::GF_base(ts.squeeze_u64() % goldilocks::GF_base::P); 
+    }
+};
 }
