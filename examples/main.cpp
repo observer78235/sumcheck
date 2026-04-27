@@ -1,15 +1,22 @@
 #include <iostream>
 #include <vector>
+#include <string>
 
-// 包含所有域
+// 包含所有基础域
 #include "fields/goldilocks/field.hpp"
 #include "fields/babybear/field.hpp"
 #include "fields/koalabear/field.hpp"
+
+// 包含所有扩域定义
+#include "fields/goldilocks/extension.hpp"
+#include "fields/babybear/extension.hpp"
+#include "fields/koalabear/extension.hpp"
 
 // 包含协议逻辑
 #include "sumcheck/prover.hpp"
 #include "sumcheck/verifier.hpp"
 
+// 保持你原来的测试模板函数
 template <typename F>
 void run_sumcheck_test(const std::string& field_name, const std::vector<uint64_t>& raw_data) {
     std::cout << "\n--- Testing Sum-check on " << field_name << " ---" << std::endl;
@@ -33,16 +40,23 @@ void run_sumcheck_test(const std::string& field_name, const std::vector<uint64_t
 }
 
 int main() {
+    // 测试数据：2^3 = 8 个点
     std::vector<uint64_t> data = {1, 2, 3, 4, 5, 6, 7, 8};
 
-    // 运行 Goldilocks (64-bit)
-    run_sumcheck_test<goldilocks::GF_base>("Goldilocks", data);
+    // --- 1. Goldilocks 验证 ---
+    run_sumcheck_test<goldilocks::GF_base>("Goldilocks Base", data);
+    run_sumcheck_test<goldilocks::GF_2>("Goldilocks Ext2", data);
+    run_sumcheck_test<goldilocks::GF_4>("Goldilocks Ext4", data);
 
-    // 运行 BabyBear (31-bit)
-    run_sumcheck_test<babybear::Field>("BabyBear", data);
+    // --- 2. BabyBear 验证 ---
+    run_sumcheck_test<babybear::Field>("BabyBear Base", data);
+    run_sumcheck_test<babybear::Ext2>("BabyBear Ext2", data);
+    run_sumcheck_test<babybear::Ext4>("BabyBear Ext4", data);
 
-    // 运行 KoalaBear (31-bit)
-    run_sumcheck_test<koalabear::Field>("KoalaBear", data);
+    // --- 3. KoalaBear 验证 ---
+    run_sumcheck_test<koalabear::Field>("KoalaBear Base", data);
+    run_sumcheck_test<koalabear::Ext2>("KoalaBear Ext2", data);
+    run_sumcheck_test<koalabear::Ext4>("KoalaBear Ext4", data);
 
     return 0;
 }
